@@ -1,0 +1,47 @@
+import serial
+import time, datetime
+
+ser = serial.Serial(
+    port='COM6',
+    baudrate='115200'
+    )
+ser.timeout=5
+
+f = open('print.log','w')
+
+if ser.isOpen():
+    print 'Port',ser.name,'open ok for test...\n'
+else:
+    print 'Port',ser.name,'closed'
+print 'START\n'
+
+try:
+    
+    print '_________Step2_________'      
+    ser.write('AT+IPR?a'+"\r\n")
+    time.sleep(1)
+    result = ''
+    while ser.inWaiting() > 0:
+        result += ser.read()    
+    #a = result.find('ERROR')            #check have str 'ERROR' in result
+    b = result.find("\r\nOK\r\n")               #check have str 'OK' in result 
+  
+    #if a > 0:                           #have str 'ERROR' in result
+    #    print 'Wrong AT command\r\n'     
+    if b >0:                          #have str 'OK' in result
+        print 'Turn off echo', '\r\n' + result   
+      
+        print 'Passed' 
+    else:
+        resultTC = 'Failed'
+        print 'Failed\n'
+        
+            
+    ser.close()
+    
+    
+    
+except Exception, err_msg :
+    resultTC = "Failed"
+    print 'TC fail'
+    print Exception, err_msg
